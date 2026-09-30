@@ -135,3 +135,35 @@ Sustituir ítems **2, 3, 13, 17** por:
 - **Velocidad máx. estimada:** NEMA 17 a 24 V ≈ 600 rpm → 0.4 m/s con polea 20T.
 - **Swing-up** (como en el ejemplo MathWorks) requiere riel ≥ 0.8 m y buena aceleración; con solo estabilización basta ≥ 0.5 m.
 - Verificar perfil real de la correa Gates (GT2 2 mm / GT3 / HTD 3M) y ancho antes de comprar poleas.
+
+---
+
+## 8. Opción C — Placa Creality 4.2.2 (Ender 3 V2) — **seleccionada**
+
+Sustituye ítems **1, 3, 6, 7, 11, 12, 13** (Arduino, driver, buck, shield, pull-ups).
+
+| Recurso | Uso |
+|---|---|
+| STM32F103RET6 72 MHz | Lazo LQR a 500 Hz |
+| Driver X (TMC2208/HR4988 standalone, 1/16) | Motor del carro |
+| Y-STOP (PA6) + Z-STOP (PA7) = TIM3 | Encoder del péndulo por hardware |
+| X-STOP (PA5), BLTouch IN (PB1) | Finales de carrera |
+| USB CH340 | Telemetría / comandos |
+
+Adicional opcional: **ST-Link V2** (~5 USD) para programar por SWD.
+
+Cableado y firmware: [`firmware/README.md`](../firmware/README.md).
+
+## 9. Encoder recomendado
+
+| Opción | Modelo | Resolución | Salida | Precio | Veredicto |
+|---|---|---|---|---|---|
+| **1** | **Omron E6B2-CWZ6C 1000 P/R** | 4000 cuentas (0.09°) | NPN colector abierto, 5–24 V | 25–45 USD | **Recomendado** |
+| 2 | LPD3806-600BM-G5-24C | 2400 cuentas (0.15°) | NPN colector abierto, 5–24 V | 12–15 USD | Económico, funciona |
+| 3 | Omron E6B2-CWZ6C 2000 P/R | 8000 cuentas | NPN colector abierto | 30–50 USD | Mejor estimación de ω |
+
+**Evitar:** E6B2-CWZ**3E** (salida de voltaje 5 V, no apta para PA6/PA7), KY-040 (mecánico, 20 pasos/vuelta), AMT10x en 5 V push-pull sin adaptar nivel, AS5600 (I²C, pines ocupados por la pantalla).
+
+Simulación con cuantización (LQR a 500 Hz, derivada de 5 muestras): 600 P/R estabiliza, 1000 P/R reduce ~25 % el ruido en la aceleración y 2000 P/R ~40 %.
+
+Montaje: eje del encoder Ø6 mm → acople flexible → eje del péndulo Ø8 mm en 2 × 608ZZ. El encoder no debe soportar carga radial.
