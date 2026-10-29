@@ -158,7 +158,8 @@ Cableado y firmware: [`firmware/README.md`](../firmware/README.md).
 
 | Opción | Modelo | Resolución | Salida | Precio | Veredicto |
 |---|---|---|---|---|---|
-| **1** | **Omron E6B2-CWZ6C 1000 P/R** | 4000 cuentas (0.09°) | NPN colector abierto, 5–24 V | 25–45 USD | **Recomendado** |
+| **✔** | **E38S6G5-600B-G24N** | 2400 cuentas (0.15°) | NPN colector abierto, 5–24 V | ~246 MXN | **Seleccionado** |
+| 1 | Omron E6B2-CWZ6C 1000 P/R | 4000 cuentas (0.09°) | NPN colector abierto, 5–24 V | 25–45 USD | Menos ruido (−25 %) |
 | 2 | LPD3806-600BM-G5-24C | 2400 cuentas (0.15°) | NPN colector abierto, 5–24 V | 12–15 USD | Económico, funciona |
 | 3 | Omron E6B2-CWZ6C 2000 P/R | 8000 cuentas | NPN colector abierto | 30–50 USD | Mejor estimación de ω |
 

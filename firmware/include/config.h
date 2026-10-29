@@ -34,7 +34,7 @@
 #define MOTOR_SIGNO   1          // invertir si +x va al lado contrario
 
 // ---- Encoder ----
-#define ENC_PPR       1000
+#define ENC_PPR       600        // E38S6G5-600B-G24N
 #define ENC_CPR       (4 * ENC_PPR)
 #define ENC_SIGNO     1          // invertir si theta crece al inclinar hacia -x
 
