@@ -7,7 +7,29 @@
 enum Estado : uint8_t { INACTIVO, HOMING, LISTO, BALANCE, FALLA };
 static const char *NOMBRE[] = {"INACTIVO", "HOMING", "LISTO", "BALANCE", "FALLA"};
 
-HardwareSerial ser(PIN_RX, PIN_TX);
+HardwareSerial usb(PIN_RX, PIN_TX);
+HardwareSerial esp(PIN_ESP_RX, PIN_ESP_TX);
+
+struct Puerto {
+  HardwareSerial &s;
+  uint8_t div;
+  bool telem;
+  char buf[64];
+  uint8_t n;
+};
+Puerto puertos[] = {{usb, TELEM_DIV, false, {}, 0}, {esp, TELEM_DIV_ESP, false, {}, 0}};
+
+class Ambos : public Print {
+ public:
+  size_t write(uint8_t c) override {
+    for (auto &p : puertos) p.s.write(c);
+    return 1;
+  }
+  size_t write(const uint8_t *b, size_t n) override {
+    for (auto &p : puertos) p.s.write(b, n);
+    return n;
+  }
+} ser;
 HardwareTimer *tStep, *tCtl;
 
 volatile int32_t sps = 0;
@@ -16,7 +38,8 @@ volatile bool tickCtl = false;
 
 static const float TS = 1.0f / CTL_HZ;
 static Estado est = INACTIVO;
-static bool conCero = false, ondaCuad = false, telem = false;
+static bool conCero = false, ondaCuad = false;
+static float K[4] = {K_LQR[0], K_LQR[1], K_LQR[2], K_LQR[3]};
 static uint8_t fHoming = 0;
 static float v = 0, a = 0, xr = 0, w = 0, th = 0, x = 0;
 static int32_t encTot = 0;
@@ -128,6 +151,17 @@ float frenar(float vel) {
   return 0;
 }
 
+void telemetria(Print &o) {
+  o.print(millis()); o.print(',');
+  o.print(x, 4);     o.print(',');
+  o.print(v, 3);     o.print(',');
+  o.print(th, 4);    o.print(',');
+  o.print(w, 3);     o.print(',');
+  o.print(a, 2);     o.print(',');
+  o.print(xr, 3);    o.print(',');
+  o.println((int)est);
+}
+
 void control() {
   int32_t c = encLeer();
   th = envolver(c * (TWO_PI / ENC_CPR) + PI);
@@ -175,7 +209,7 @@ void control() {
       }
       if (ondaCuad) xr = ((millis() - tRef0) % (uint32_t)(REF_T * 1000) < REF_T * 500) ? REF_AMP : -REF_AMP;
       float ex = constrain(x - xr, -EX_MAX, EX_MAX);
-      a = -(K_LQR[0] * ex + K_LQR[1] * v + K_LQR[2] * th + K_LQR[3] * w);
+      a = -(K[0] * ex + K[1] * v + K[2] * th + K[3] * w);
       a = constrain(a, -A_MAX, A_MAX);
       v = constrain(v + a * TS, -V_MAX, V_MAX);
       break;
@@ -188,16 +222,9 @@ void control() {
 
   sps = (int32_t)lroundf(v * PASOS_M);
 
-  if (telem && (++nCtl % TELEM_DIV == 0)) {
-    ser.print(millis()); ser.print(',');
-    ser.print(x, 4);     ser.print(',');
-    ser.print(v, 3);     ser.print(',');
-    ser.print(th, 4);    ser.print(',');
-    ser.print(w, 3);     ser.print(',');
-    ser.print(a, 2);     ser.print(',');
-    ser.print(xr, 3);    ser.print(',');
-    ser.println((int)est);
-  }
+  ++nCtl;
+  for (auto &p : puertos)
+    if (p.telem && nCtl % p.div == 0) telemetria(p.s);
 }
 
 void ayuda() {
@@ -206,8 +233,26 @@ void ayuda() {
   ser.println(F("#  e  habilitar        d  deshabilitar"));
   ser.println(F("#  c  encoder: péndulo colgando = abajo"));
   ser.println(F("#  w  onda cuadrada on/off   r<m>  referencia (ej. r0.05)"));
-  ser.println(F("#  t  telemetría on/off  i  info   ?  ayuda"));
+  ser.println(F("#  t  telemetría on/off (t1/t0)  i  info   ?  ayuda"));
+  ser.println(F("#  k<k1>,<k2>,<k3>,<k4>  ganancias LQR en vivo"));
   ser.println(F("# telemetría: t_ms,x,v,theta,omega,a,x_ref,estado"));
+}
+
+void infoK() {
+  ser.print("#K=");
+  for (int i = 0; i < 4; i++) { ser.print(K[i], 4); ser.print(i < 3 ? ',' : '\n'); }
+}
+
+bool leerK(char *q) {
+  float nk[4];
+  for (int i = 0; i < 4; i++) {
+    char *e;
+    nk[i] = strtof(q, &e);
+    if (e == q || !isfinite(nk[i])) return false;
+    q = (*e == ',') ? e + 1 : e;
+  }
+  memcpy(K, nk, sizeof(K));
+  return true;
 }
 
 void info() {
@@ -217,12 +262,10 @@ void info() {
   ser.print(" limI="); ser.print(limIzq());
   ser.print(" limD="); ser.print(limDer());
   ser.print(" cero="); ser.println(conCero);
-  ser.print("# K = ");
-  for (float k : K_LQR) { ser.print(k, 4); ser.print(' '); }
-  ser.println();
+  infoK();
 }
 
-void comando(char *l) {
+void comando(char *l, Puerto &p) {
   switch (l[0]) {
     case 'h':
       if (!USAR_HOMING) { ser.println("# homing desactivado"); break; }
@@ -236,21 +279,28 @@ void comando(char *l) {
     case 'c': encCero(); ser.println("# encoder en cero (abajo)"); break;
     case 'w': ondaCuad = !ondaCuad; if (!ondaCuad) xr = 0; tRef0 = millis(); break;
     case 'r': xr = constrain(atof(l + 1), -X_SUAVE, X_SUAVE); ondaCuad = false; break;
-    case 't': telem = !telem; if (telem) ser.println("#t_ms,x,v,theta,omega,a,x_ref,estado"); break;
+    case 't':
+      p.telem = l[1] ? l[1] == '1' : !p.telem;
+      if (p.telem) p.s.println("#t_ms,x,v,theta,omega,a,x_ref,estado");
+      break;
+    case 'k':
+      if (!leerK(l + 1)) ser.println("# formato: k<k1>,<k2>,<k3>,<k4>");
+      infoK();
+      break;
     case 'i': info(); break;
     case '?': ayuda(); break;
   }
 }
 
 void leerSerie() {
-  static char buf[24];
-  static uint8_t n = 0;
-  while (ser.available()) {
-    char ch = ser.read();
-    if (ch == '\n' || ch == '\r') {
-      if (n) { buf[n] = 0; comando(buf); n = 0; }
-    } else if (n < sizeof(buf) - 1) {
-      buf[n++] = ch;
+  for (auto &p : puertos) {
+    while (p.s.available()) {
+      char ch = p.s.read();
+      if (ch == '\n' || ch == '\r') {
+        if (p.n) { p.buf[p.n] = 0; comando(p.buf, p); p.n = 0; }
+      } else if (p.n < sizeof(p.buf) - 1) {
+        p.buf[p.n++] = ch;
+      }
     }
   }
 }
@@ -264,7 +314,8 @@ void setup() {
   pinMode(PIN_LIM_IZQ, INPUT_PULLUP);
   pinMode(PIN_LIM_DER, INPUT_PULLUP);
 
-  ser.begin(BAUD);
+  usb.begin(BAUD);
+  esp.begin(BAUD_ESP);
   encInit();
   encCero();
 

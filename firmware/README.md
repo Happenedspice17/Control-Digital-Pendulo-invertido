@@ -20,6 +20,7 @@ matlab/parametros.m ──► matlab/diseno_lqr.m ──► firmware/include/gai
 | Final de carrera der. | **BLTouch IN** | PB1 | Switch NC a GND (usar GND del header) |
 | Hotend / cama / fan | — | PA1 / PA2 / PA0 | Forzados a LOW |
 | USB | micro-USB | PA9/PA10 (CH340) | 115200 baud |
+| ESP32 (dashboard) | Conector de pantalla | PB10 TX / PB11 RX (USART3) | 460800 baud, ver `esp32/README.md` |
 
 > **No conectar la salida del encoder a 5 V con pull-up propio:** PA6/PA7 no toleran 5 V. Usar encoder de **colector abierto (NPN)**; la placa ya tiene pull-up a 3.3 V.
 >
@@ -56,7 +57,8 @@ Monitor serie: `pio device monitor`.
 | `c` | Recalibrar encoder (péndulo colgando = abajo) |
 | `w` | Onda cuadrada ±`REF_AMP` (como la demo de MathWorks) |
 | `r0.05` | Referencia fija de posición en m |
-| `t` | Telemetría CSV `t_ms,x,v,theta,omega,a,x_ref,estado` |
+| `t` / `t1` / `t0` | Telemetría CSV `t_ms,x,v,theta,omega,a,x_ref,estado` (por puerto) |
+| `k-13.8,-11.0,-49.7,-8.0` | Ganancias LQR en vivo (responde `#K=...`) |
 | `i` | Estado, ángulo, switches y ganancias |
 
 ## Máquina de estados

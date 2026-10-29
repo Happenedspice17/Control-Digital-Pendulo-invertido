@@ -108,3 +108,29 @@ Alternativa simple (péndulo ligero): varilla sujeta **directo al eje de 6 mm de
 2. Señal Y-STOP / Z-STOP sin nada conectado ≈ 3.3 V.
 3. Motor: medir continuidad para identificar pares de bobina (≈ 1–3 Ω).
 4. Polaridad de 24 V en la placa.
+
+---
+
+## 3. ESP32 (dashboard WiFi)
+
+Se conecta al **conector de la pantalla** de la placa (USART3). La pantalla de la Ender 3 V2 se desconecta.
+
+```
+ Fuente 24V ──► [Buck LM2596 → 5V] ──► ESP32 VIN (5V)
+                                       ESP32 GND ──────────► GND placa (común)
+
+ ESP32 GPIO16 (RX2) ◄───────────── TX placa  (PB10)  ┐
+ ESP32 GPIO17 (TX2) ──────────────► RX placa (PB11)  ┘ conector de pantalla
+```
+
+| ESP32 DevKit | Placa 4.2.2 (conector pantalla) | Nota |
+|---|---|---|
+| GPIO16 (RX2) | TX — PB10 | Cruzado: TX → RX |
+| GPIO17 (TX2) | RX — PB11 | |
+| GND | GND | Obligatorio, tierra común |
+| VIN | — | 5 V del buck, **no** del conector de la placa |
+
+- Ambos trabajan a 3.3 V: conexión directa, sin adaptador de nivel.
+- **No** conectar el pin de 5 V del conector de pantalla al ESP32 (el regulador de la placa no está pensado para los picos de WiFi).
+- Alimentar el buck desde la misma fuente de 24 V, **antes** del paro de emergencia: así el dashboard sigue encendido al presionar el paro.
+- **Verificar** el orden de pines del conector de pantalla contra el esquemático de la 4.2.2 / Marlin (`pins_CREALITY_V4.h`, `LCD_SERIAL_PORT 3`). Con el firmware corriendo y la telemetría activa, el pin TX (PB10) mide ≈ 3.3 V en reposo.

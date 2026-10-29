@@ -167,3 +167,13 @@ Cableado y firmware: [`firmware/README.md`](../firmware/README.md).
 Simulación con cuantización (LQR a 500 Hz, derivada de 5 muestras): 600 P/R estabiliza, 1000 P/R reduce ~25 % el ruido en la aceleración y 2000 P/R ~40 %.
 
 Montaje: eje del encoder Ø6 mm → acople flexible → eje del péndulo Ø8 mm en 2 × 608ZZ. El encoder no debe soportar carga radial.
+
+## 10. Dashboard WiFi (ESP32)
+
+| Componente | Especificación | Cant. | Precio aprox. (USD) | Nota |
+|---|---|---|---|---|
+| ESP32 DevKit V1 | WROOM-32, 38 pines | 1 | 5 | Puente WiFi ↔ placa |
+| Convertidor buck | LM2596 24 V → 5 V | 1 | 2 | Alimentación del ESP32 |
+| Cables Dupont | H-H / H-M | 4 | 0.5 | TX, RX, GND |
+
+Detalles: [`esp32/README.md`](../esp32/README.md) y [`CONEXIONES.md`](CONEXIONES.md#3-esp32-dashboard-wifi).

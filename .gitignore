@@ -1,3 +1,4 @@
 .pio/
 *.asv
 matlab/telemetria.mat
+esp32/include/pagina.h

@@ -21,6 +21,10 @@
 #define PIN_TX        PA9
 #define BAUD          115200
 
+#define PIN_ESP_RX    PB11       // USART3, conector de pantalla (DWIN)
+#define PIN_ESP_TX    PB10
+#define BAUD_ESP      460800
+
 // ---- Mecánica ----
 #define PASOS_REV     200
 #define MICROPASOS    16         // fijo en 4.2.2 (standalone)
@@ -55,4 +59,5 @@
 #define REF_AMP       0.10f      // m
 #define REF_T         8.0f       // s
 
-#define TELEM_DIV     10         // telemetría a CTL_HZ/TELEM_DIV
+#define TELEM_DIV     10         // telemetría USB a CTL_HZ/TELEM_DIV (50 Hz)
+#define TELEM_DIV_ESP 5          // telemetría ESP32 (100 Hz)
