@@ -1,180 +1,65 @@
-# BOM — Péndulo Invertido sobre Carro (Arduino)
+# BOM final — Péndulo invertido sobre carro
 
-Referencia: [MathWorks — Inverted Pendulum with Animation](https://es.mathworks.com/help/simulink/slref/inverted-pendulum-with-animation.html)
+Configuración elegida: **Creality 4.2.2 + NEMA 17 + encoder 600 PPR + ESP32 (dashboard WiFi)**.
+Precios aproximados en MXN (solo lo que hay que comprar). Comparativa de alternativas: [`BOM_opciones.md`](BOM_opciones.md).
 
-**Ya disponible:** riel lineal, correa Gates (se asume perfil **GT2, 6 mm**; ajustar poleas si es otro perfil).
+## 1. Electrónica y control
 
----
-
-## 1. Selección de actuador
-
-| Criterio | Servo RC (SG90/MG996R) | Stepper NEMA 17 + TMC2209 | Stepper NEMA 17 lazo cerrado (MKS SERVO42C/D) | Motor DC + encoder (JGB37 / 775) |
-|---|---|---|---|---|
-| Rotación continua | ❌ (180°) | ✅ | ✅ | ✅ |
-| Respuesta rápida | ❌ | ✅ | ✅ | ✅✅ |
-| Pérdida de pasos | — | ⚠️ posible | ✅ corregida | — |
-| Control por fuerza/torque (modelo MathWorks) | ❌ | ❌ (control por aceleración) | ⚠️ | ✅ (PWM ≈ fuerza) |
-| Facilidad | — | ✅✅ | ✅ | ✅ |
-| **Veredicto** | **No apto** | **Recomendado (opción A)** | Mejor stepper (opción A+) | Alternativa (opción B) |
-
-> Los servos RC **no sirven** para mover el carro: rango limitado y control de posición lento. Si se quiere "servo", usar un **servo industrial / stepper de lazo cerrado** (opción A+).
-
----
-
-## 2. BOM — Opción A: Stepper (recomendada)
-
-### 2.1 Control y electrónica
-
-| # | Componente | Especificación | Cant. | Precio aprox. (USD) | Nota |
+| # | Componente | Especificación | Cant. | Estado | Precio aprox. |
 |---|---|---|---|---|---|
-| 1 | Arduino Mega 2560 | ATmega2560, 16 MHz, 6 INT externas | 1 | 15 | Alternativa: Arduino Due / Teensy 4.0 (más velocidad) |
-| 2 | Motor paso a paso NEMA 17 | 1.8°, ≥ 0.45 N·m (17HS19-2004S1, 2 A) | 1 | 14 | Eje 5 mm |
-| 3 | Driver TMC2209 | StepStick, UART, hasta 2 A RMS | 1 (+1 repuesto) | 6 | Silencioso; alt. DM542 (NEMA 23) |
-| 4 | Encoder incremental péndulo | LPD3806-600BM, 600 PPR, A/B, 5–24 V | 1 | 15 | 2400 cuentas/rev en cuadratura (0.15°) |
-| 5 | Fuente conmutada | 24 V, 5 A (120 W) | 1 | 18 | 12 V funciona pero con menor velocidad |
-| 6 | Convertidor buck | LM2596 24 V → 5 V/7 V | 1 | 2 | Alimentar Arduino/encoder |
-| 7 | Capacitor electrolítico | 100 µF, 50 V | 2 | 1 | En VMOT del driver |
-| 8 | Finales de carrera | Microswitch con palanca (KW12-3) | 2 | 2 | Seguridad + homing |
-| 9 | Botón paro de emergencia | Hongo NC, 22 mm | 1 | 4 | Corta VMOT |
-| 10 | Pulsadores | 12 mm (Start / Reset) | 2 | 1 | |
-| 11 | Shield / PCB perforada | Perfboard 7×9 cm o CNC Shield V3 | 1 | 4 | |
-| 12 | Resistencias pull-up | 4.7 kΩ (encoder A/B si open-collector) | 4 | 0.5 | LPD3806 es colector abierto |
-| 13 | Disipador + ventilador | 40 mm 24 V para driver | 1 | 3 | |
-| 14 | Borneras y conectores | KF301, JST-XH 4P, Dupont | kit | 5 | |
-| 15 | Cable | AWG 18 (potencia), AWG 24 (señal), apantallado 4 hilos (encoder) | 3 m c/u | 6 | |
-| 16 | Interruptor principal | Basculante con fusible, IEC C14 | 1 | 3 | |
+| 1 | Placa Creality 4.2.2 | STM32F103RET6, drivers integrados (1/16) | 1 | ✅ Disponible | — |
+| 2 | Motor a pasos NEMA 17 | 1.8°, ≥ 0.4 N·m | 1 | ✅ Disponible | — |
+| 3 | Fuente 24 V | ≥ 5 A (de la Chiron) | 1 | ✅ Disponible | — |
+| 4 | Finales de carrera | Microswitch, cableado NC a GND | 2 | ✅ Disponible (Chiron) | — |
+| 5 | **Encoder incremental** | **E38S6G5-600B-G24N**, 600 PPR, NPN colector abierto, 5–24 V, eje 6 mm | 1 | 🛒 Comprar | $246 |
+| 6 | ESP32 DevKit V1 | WROOM-32, 38 pines | 1 | ✅ Disponible | — |
+| 7 | Convertidor buck | LM2596, 24 V → 5 V (alimenta ESP32) | 1 | 🛒 Comprar | $50 |
+| 8 | Tarjeta microSD | ≤ 32 GB, FAT32 (flashear la Creality) | 1 | 🛒 Si no hay | $100 |
+| 9 | ST-Link V2 *(opcional)* | Programar/depurar por SWD | 1 | 🛒 Opcional | $150 |
 
-### 2.2 Mecánica
+## 2. Mecánica
 
-| # | Componente | Especificación | Cant. | Precio aprox. (USD) | Nota |
+| # | Componente | Especificación | Cant. | Estado | Precio aprox. |
 |---|---|---|---|---|---|
-| 17 | Polea motriz GT2 | 20 dientes, 6 mm, bore 5 mm | 1 | 2 | r ≈ 6.37 mm → 40 mm/rev |
-| 18 | Polea loca GT2 | 20T sin dientes, bore 5 mm, con rodamiento | 1 | 2 | Extremo opuesto |
-| 19 | Tensor de correa | Tensor GT2 de resorte o soporte ranurado | 1 | 2 | |
-| 20 | Soporte motor NEMA 17 | Escuadra de aluminio / impresa | 1 | 3 | |
-| 21 | Carro | Placa aluminio 3–5 mm o impresa PETG, compatible con riel | 1 | 5 | Minimizar masa (M) |
-| 22 | Sujetador de correa | Clamp GT2 para carro | 2 | 1 | |
-| 23 | Eje del péndulo | Acero plata Ø 8 mm, 60 mm | 1 | 2 | Acople directo al encoder |
-| 24 | Rodamientos | 608ZZ (8×22×7) | 2 | 1 | Soporte del eje en el carro |
-| 25 | Acople flexible | 6 mm ↔ 8 mm (eje encoder ↔ eje péndulo) | 1 | 2 | Evita carga radial en encoder |
-| 26 | Varilla del péndulo | Aluminio Ø 6–8 mm o tubo, 300–500 mm | 1 | 3 | Longitud L del modelo |
-| 27 | Masa en la punta (opcional) | Tuerca / disco 20–50 g | 1 | 1 | Para ajustar m y l |
-| 28 | Topes mecánicos | Bumpers de goma en extremos del riel | 2 | 1 | |
-| 29 | Tornillería | M3, M4, M5 + tuercas T (si riel V-slot) | kit | 5 | |
-| 30 | Base | MDF 18 mm / perfil 2040, largo = riel | 1 | 8 | |
+| 10 | Riel | Perfil de aluminio (Chiron) | 1 | ✅ Disponible | — |
+| 11 | Correa Gates | GT2 6 mm, lazo cerrado | 1 | ✅ Disponible | — |
+| 12 | Polea motriz GT2 | 20 dientes, bore 5 mm | 1 | ✅ Disponible (Chiron) | — |
+| 13 | Polea loca | GT2 o lisa, con 608ZZ | 1 | ✅ Disponible (Chiron / 608ZZ) | — |
+| 14 | Rodamientos 608ZZ | 8×22×7 mm (pivote del péndulo) | 2 | ✅ Disponible | — |
+| 15 | Eje del pivote | Acero plata Ø 8 mm × 60 mm | 1 | 🛒 Comprar | $60 |
+| 16 | Acople flexible | 6 mm ↔ 8 mm (encoder ↔ eje) | 1 | 🛒 Comprar | $60 |
+| 17 | Varilla del péndulo | Aluminio Ø 6–8 mm × 400 mm | 1 | 🛒 Comprar | $100 |
+| 18 | Piezas impresas | Carro, soporte encoder, cubo del péndulo, soporte motor, tensor, clamps de correa (PETG) | 1 juego | ✅ Imprimir (A2L / Ender) | — |
+| 19 | Tornillería | M2–M5, tuercas, resortes | kit | ✅ Disponible | — |
+| 20 | Topes de goma | Extremos del riel | 2 | 🛒 Comprar | $30 |
 
-**Subtotal estimado opción A:** ≈ 175 USD
+## 3. Cableado y seguridad
 
-### 2.3 Opción A+ (stepper de lazo cerrado)
+| # | Componente | Especificación | Cant. | Estado | Precio aprox. |
+|---|---|---|---|---|---|
+| 21 | Paro de emergencia | Hongo NC, 22 mm, corta +24 V | 1 | 🛒 Comprar | $80 |
+| 22 | Interruptor de entrada | Con fusible (IEC C14 o basculante) | 1 | 🛒 Si la fuente no trae | $50 |
+| 23 | Conectores JST-XH 2.54 | 2 y 3 pines (endstops, encoder a la placa) | kit | 🛒 Comprar | $60 |
+| 24 | Cables Dupont | H-H / H-M (ESP32 ↔ placa) | 10 | 🛒 Comprar | $30 |
+| 25 | Cable | AWG 18 (24 V), AWG 24 (señales) | 2 m c/u | ✅ / 🛒 | $40 |
+| 26 | Termofil y cinchos | Varios | — | ✅ / 🛒 | $30 |
 
-Sustituir ítems **2, 3, 13**:
+## 4. Resumen de compra
 
-| Componente | Especificación | Cant. | Precio aprox. (USD) |
-|---|---|---|---|
-| MKS SERVO42D (o 57D con NEMA 23) | NEMA 17 + encoder magnético + driver integrado, STEP/DIR | 1 | 35 |
-
----
-
-## 3. BOM — Opción B: Motor DC con encoder (control por fuerza)
-
-Sustituir ítems **2, 3, 13, 17** por:
-
-| Componente | Especificación | Cant. | Precio aprox. (USD) | Nota |
-|---|---|---|---|---|
-| Motor DC con encoder | JGB37-520 12 V 330 rpm, encoder Hall 11 PPR | 1 | 15 | O 775 + encoder 600 PPR externo |
-| Driver puente H | BTS7960 43 A | 1 | 8 | Alt. VNH5019 / L298N (no recomendado) |
-| Polea GT2 20T | bore 6 mm (eje del JGB37) | 1 | 2 | |
-| Fuente | 12 V, 10 A | 1 | 18 | Sustituye ítem 5 |
-
-> Con motor DC el Arduino Mega necesita 4 interrupciones (encoder péndulo A/B + encoder motor A/B): pines 2, 3, 18, 19.
-
----
-
-## 4. Herramientas / consumibles
-
-- Impresora 3D (PETG) o taller para placa del carro y soportes
-- Multímetro, cautín, estaño, termofil
-- Llaves Allen, calibrador
-- Loctite 243 (tornillos prisioneros de polea)
-
----
-
-## 5. Asignación de pines (Arduino Mega, opción A)
-
-| Señal | Pin |
+| Concepto | Precio aprox. |
 |---|---|
-| Encoder péndulo A | D2 (INT) |
-| Encoder péndulo B | D3 (INT) |
-| STEP | D9 (Timer1 / OC1A) |
-| DIR | D8 |
-| EN | D7 |
-| TMC2209 UART | D18 (TX1) / D19 (RX1) vía 1 kΩ |
-| Final carrera izq. | D20 |
-| Final carrera der. | D21 |
-| Start / Reset | D22 / D23 |
+| Indispensable (5, 7, 15, 16, 17, 20, 21, 23, 24) | **≈ $720** |
+| Si no hay microSD / interruptor / cable / termofil (8, 22, 25, 26) | + $220 |
+| ST-Link (opcional) | + $150 |
+| **Total máximo** | **≈ $1,090 MXN** |
 
----
+## 5. Herramientas
 
-## 6. Parámetros a medir (para el modelo de Simulink)
+Multímetro, cautín y estaño, desarmadores, llaves Allen, calibrador, impresora 3D, Loctite 243 (prisioneros de poleas y acople).
 
-| Símbolo | Descripción | Cómo |
-|---|---|---|
-| M | Masa del carro (+ partes móviles) | Báscula |
-| m | Masa del péndulo | Báscula |
-| l | Distancia pivote–centro de masa | Balance en filo |
-| I | Inercia del péndulo | ≈ m·L²/3 (varilla) o prueba de oscilación |
-| b | Fricción del carro | Prueba de desaceleración libre |
-| r | Radio de la polea | 20T GT2 → 6.37 mm |
+## 6. Notas
 
----
-
-## 7. Notas de diseño
-
-- **Frecuencia de control:** ≥ 200 Hz (Ts ≤ 5 ms). Usar interrupción por timer para el lazo.
-- **Stepper:** el controlador (LQR/PID) debe generar **aceleración** del carro; integrar para obtener frecuencia de pasos. Microstepping 1/8 → 1600 pasos/rev → 25 µm/paso.
-- **Velocidad máx. estimada:** NEMA 17 a 24 V ≈ 600 rpm → 0.4 m/s con polea 20T.
-- **Swing-up** (como en el ejemplo MathWorks) requiere riel ≥ 0.8 m y buena aceleración; con solo estabilización basta ≥ 0.5 m.
-- Verificar perfil real de la correa Gates (GT2 2 mm / GT3 / HTD 3M) y ancho antes de comprar poleas.
-
----
-
-## 8. Opción C — Placa Creality 4.2.2 (Ender 3 V2) — **seleccionada**
-
-Sustituye ítems **1, 3, 6, 7, 11, 12, 13** (Arduino, driver, buck, shield, pull-ups).
-
-| Recurso | Uso |
-|---|---|
-| STM32F103RET6 72 MHz | Lazo LQR a 500 Hz |
-| Driver X (TMC2208/HR4988 standalone, 1/16) | Motor del carro |
-| Y-STOP (PA6) + Z-STOP (PA7) = TIM3 | Encoder del péndulo por hardware |
-| X-STOP (PA5), BLTouch IN (PB1) | Finales de carrera |
-| USB CH340 | Telemetría / comandos |
-
-Adicional opcional: **ST-Link V2** (~5 USD) para programar por SWD.
-
-Cableado y firmware: [`firmware/README.md`](../firmware/README.md).
-
-## 9. Encoder recomendado
-
-| Opción | Modelo | Resolución | Salida | Precio | Veredicto |
-|---|---|---|---|---|---|
-| **✔** | **E38S6G5-600B-G24N** | 2400 cuentas (0.15°) | NPN colector abierto, 5–24 V | ~246 MXN | **Seleccionado** |
-| 1 | Omron E6B2-CWZ6C 1000 P/R | 4000 cuentas (0.09°) | NPN colector abierto, 5–24 V | 25–45 USD | Menos ruido (−25 %) |
-| 2 | LPD3806-600BM-G5-24C | 2400 cuentas (0.15°) | NPN colector abierto, 5–24 V | 12–15 USD | Económico, funciona |
-| 3 | Omron E6B2-CWZ6C 2000 P/R | 8000 cuentas | NPN colector abierto | 30–50 USD | Mejor estimación de ω |
-
-**Evitar:** E6B2-CWZ**3E** (salida de voltaje 5 V, no apta para PA6/PA7), KY-040 (mecánico, 20 pasos/vuelta), AMT10x en 5 V push-pull sin adaptar nivel, AS5600 (I²C, pines ocupados por la pantalla).
-
-Simulación con cuantización (LQR a 500 Hz, derivada de 5 muestras): 600 P/R estabiliza, 1000 P/R reduce ~25 % el ruido en la aceleración y 2000 P/R ~40 %.
-
-Montaje: eje del encoder Ø6 mm → acople flexible → eje del péndulo Ø8 mm en 2 × 608ZZ. El encoder no debe soportar carga radial.
-
-## 10. Dashboard WiFi (ESP32)
-
-| Componente | Especificación | Cant. | Precio aprox. (USD) | Nota |
-|---|---|---|---|---|
-| ESP32 DevKit V1 | WROOM-32, 38 pines | 1 | 5 | Puente WiFi ↔ placa |
-| Convertidor buck | LM2596 24 V → 5 V | 1 | 2 | Alimentación del ESP32 |
-| Cables Dupont | H-H / H-M | 4 | 0.5 | TX, RX, GND |
-
-Detalles: [`esp32/README.md`](../esp32/README.md) y [`CONEXIONES.md`](CONEXIONES.md#3-esp32-dashboard-wifi).
+- **Encoder:** verificar al recibirlo que la salida es colector abierto (A sin 5 V fijos con el encoder alimentado). Conexión en [`CONEXIONES.md`](CONEXIONES.md).
+- **Pivote:** eje Ø8 en 2×608ZZ en el carro, varilla sujeta al eje, encoder acoplado con el acople flexible (el encoder no carga peso).
+- **Masa del carro:** mientras más ligero, más aceleración disponible del NEMA 17.
+- Medir el péndulo final (masa y largo) y actualizar `matlab/parametros.m`.
