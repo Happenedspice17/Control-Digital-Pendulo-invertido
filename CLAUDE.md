@@ -1,3 +1,9 @@
+## Flujo de trabajo
+
+- Activar ponytail al iniciar cada sesión (`/ponytail full`) y seguir `.claude/skills/ponytail/SKILL.md`: el cambio más pequeño que resuelva todo; nunca recortar validación, seguridad ni la calibración que el hardware necesita.
+- Usar graphify para preguntas sobre el código (reglas abajo). Si `graphify` no está instalado: `pip install graphifyy`.
+- Cambios por rama + PR; no empujar directo a `main`.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
