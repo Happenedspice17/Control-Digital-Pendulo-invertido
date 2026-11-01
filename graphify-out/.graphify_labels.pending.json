@@ -1,0 +1,16 @@
+{
+  "0": "firmware/src/main.cpp",
+  "1": "BOM — Opciones evaluadas (referencia)",
+  "2": "esp32/src/main.cpp",
+  "3": "Conexiones — Mecánicas y Eléctricas",
+  "4": "Firmware — Creality 4.2.2 (STM32F103RET6)",
+  "5": "BOM_opciones.md",
+  "6": "BOM final — Péndulo invertido sobre carro",
+  "7": "ESP32 — Dashboard WiFi",
+  "8": "Estado",
+  "9": "Puerto",
+  "10": "Ambos",
+  "11": "CLAUDE.md",
+  "12": ".claude/CLAUDE.md",
+  "13": "generar.py"
+}

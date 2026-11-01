@@ -1,0 +1,110 @@
+{
+  ".claude/settings.json": {
+    "mtime": 1793512620.351369,
+    "seen": 1793512642.424448,
+    "ast_hash": "3b541b9935fcf0831355da956f897645",
+    "semantic_hash": ""
+  },
+  "esp32/src/main.cpp": {
+    "mtime": 1793512545.0490496,
+    "seen": 1793512642.424456,
+    "ast_hash": "c3ba39324ca67b5d5990bd3d17e1ef72",
+    "semantic_hash": ""
+  },
+  "esp32/web/generar.py": {
+    "mtime": 1793512545.0490496,
+    "seen": 1793512642.4244587,
+    "ast_hash": "f0519a1f06e8ecd85237fbd86fdce8ef",
+    "semantic_hash": ""
+  },
+  "firmware/include/config.h": {
+    "mtime": 1793512545.0498164,
+    "seen": 1793512642.4244602,
+    "ast_hash": "47b6889627c5e1ec04e5e6d42f3f0ef8",
+    "semantic_hash": ""
+  },
+  "firmware/include/gains.h": {
+    "mtime": 1793512545.0499208,
+    "seen": 1793512642.4244616,
+    "ast_hash": "2de20534819b0f8a056a1da6e815399e",
+    "semantic_hash": ""
+  },
+  "firmware/src/main.cpp": {
+    "mtime": 1793512545.0499208,
+    "seen": 1793512642.424463,
+    "ast_hash": "00ab41f2c412c10c1f0c41654b3fd21e",
+    "semantic_hash": ""
+  },
+  "matlab/diseno_lqr.m": {
+    "mtime": 1793512545.0499208,
+    "seen": 1793512642.4244642,
+    "ast_hash": "6ffe47c51ca6d7a20eba77a63997d916",
+    "semantic_hash": ""
+  },
+  "matlab/parametros.m": {
+    "mtime": 1793512545.0506442,
+    "seen": 1793512642.4244652,
+    "ast_hash": "14af794fd656147033b46567a8c7de29",
+    "semantic_hash": ""
+  },
+  "matlab/telemetria.m": {
+    "mtime": 1793512545.0506442,
+    "seen": 1793512642.4244664,
+    "ast_hash": "ebe461409e1011d3873dbf65624eef52",
+    "semantic_hash": ""
+  },
+  ".claude/CLAUDE.md": {
+    "mtime": 1793512620.3505566,
+    "seen": 1793512642.4244676,
+    "ast_hash": "9b31786b637be3c13978bec4c2330752",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1793512620.3510268,
+    "seen": 1793512642.4244688,
+    "ast_hash": "67d88e9d0760c3ba54c75dfd9551c1c5",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1793512545.044596,
+    "seen": 1793512642.42447,
+    "ast_hash": "b937b1b0837e3a61a60a73d2dfd1c6a5",
+    "semantic_hash": ""
+  },
+  "docs/BOM.md": {
+    "mtime": 1793512545.044596,
+    "seen": 1793512642.4244711,
+    "ast_hash": "fb1e57faa044d785fbe25125e48f17d6",
+    "semantic_hash": ""
+  },
+  "docs/BOM_opciones.md": {
+    "mtime": 1793512545.0486262,
+    "seen": 1793512642.424472,
+    "ast_hash": "76aae2701a7f1e2c2b355d58fa2d40ed",
+    "semantic_hash": ""
+  },
+  "docs/CONEXIONES.md": {
+    "mtime": 1793512545.0486262,
+    "seen": 1793512642.4244733,
+    "ast_hash": "015c980416935712fd7e53b966d87aa1",
+    "semantic_hash": ""
+  },
+  "esp32/README.md": {
+    "mtime": 1793512545.0486262,
+    "seen": 1793512642.4244745,
+    "ast_hash": "5a495e8d4bb77b5aeec2a86f1fa01417",
+    "semantic_hash": ""
+  },
+  "esp32/web/index.html": {
+    "mtime": 1793512545.049437,
+    "seen": 1793512642.4244754,
+    "ast_hash": "0d3cf18e9d419c2293ccf9cf15cc9fc3",
+    "semantic_hash": ""
+  },
+  "firmware/README.md": {
+    "mtime": 1793512545.049437,
+    "seen": 1793512642.4244764,
+    "ast_hash": "180d424feb3835adc5271bfb1cfd725b",
+    "semantic_hash": ""
+  }
+}
